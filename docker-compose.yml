@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  model-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - MODEL_PATH=/app/model_5class.h5
+      - FLASK_ENV=production
+    volumes:
+      - ./backend/model_5class.h5:/app/model_5class.h5:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_KEY=${VITE_API_KEY}
+      - VITE_MODEL_API=http://model-backend:5000
+    depends_on:
+      - model-backend
+    restart: unless-stopped
+
+volumes:
+  model-storage:
