@@ -116,7 +116,7 @@ export const analyzeXray = async (
 
     // Step 3: Combine model predictions with Gemini analysis
     const finalResult: AnalysisResult = {
-      predictions: modelPredictions?.predictions || [],
+      predictions: (modelPredictions?.predictions || []) as unknown as import('../types').Prediction[],
       severity: geminiAnalysis.severity as any,
       reasoning: geminiAnalysis.reasoning || "Analysis complete",
       riskProbability: geminiAnalysis.confidence || 0.5,
